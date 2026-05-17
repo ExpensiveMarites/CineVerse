@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import GenreSection from "./GenreSection";
-import HeroSection from "./HeroSection";
-import MovieSlider from "./MovieSlider";
-import MoviesDetail from "./MoviesDetail";
-import { useMovies } from "../../context/MoviesContext";
+import GenreSection from "../components/ContentComponents/GenreSection";
+import HeroSection from "../components/ContentComponents/HeroSection";
+import MovieSlider from "../components/ContentComponents/MovieSlider";
+import MoviesDetail from "../components/ContentComponents/MoviesDetail";
+import { useMovies } from "../context/MoviesContext";
 
 function MovieContent() {
   const { trendingMovies, popularMovies, topRatedMovies, selectedMovieId, closeMovie, error } = useMovies();
@@ -47,14 +47,14 @@ function MovieContent() {
         <MovieSlider
           title="Trending This Week"
           subtitle="Stay updated with what everyone's watching"
-          movies={trendingMovies}
+          items={trendingMovies}
           id="trending"
         />
 
         <MovieSlider
           title="Popular Movies"
           subtitle="Most watched movies right now"
-          movies={popularMovies}
+          items={popularMovies}
           id="popular"
         />
 
@@ -63,7 +63,7 @@ function MovieContent() {
         <MovieSlider
           title="Top Rated Movies"
           subtitle="High Rated movies of all time"
-          movies={topRatedMovies}
+          items={topRatedMovies}
           id="top-rated"
         />
 

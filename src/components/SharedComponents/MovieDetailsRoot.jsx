@@ -1,12 +1,18 @@
 import { useMovies } from "../../context/MoviesContext";
 import MoviesDetail from "../ContentComponents/MoviesDetail";
+import TVShowDetail from "../ContentComponents/TVShowDetail";
 
 function MovieDetailsRoot() {
-    const { selectedMovieId } = useMovies();
+    const { selectedMedia } = useMovies();
 
-    if (!selectedMovieId) return null;
+    if (!selectedMedia) return null;
 
-    return <MoviesDetail />;
+    return (
+        <>
+            {selectedMedia.type === "movie" && <MoviesDetail />}
+            {selectedMedia.type === "tv" && <TVShowDetail />}
+        </>
+    );
 }
 
 export default MovieDetailsRoot;

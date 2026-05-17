@@ -1,10 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import PlayerModal from "../components/SharedComponents/PlayerModal";
 import {
     fetchTrendingMovies,
     fetchPopularMovies,
     fetchTopRatedMovies,
     fetchGenres,
     fetchMovieVideos,
+    fetchTrendingTVShows,
+    fetchPopularTVShows,
+    fetchTopRatedTVShows,
+    fetchTVShowDetails,
+    fetchSearchTVShows,
+    fetchTVShowVideos,
+    getVidSrcTVUrl,
+    fetchTVSeasons,
+    fetchSeasonDetails,
+    fetchTVGenres
 } from "../services/Api";
 
 const MoviesContext = createContext();
@@ -15,16 +26,24 @@ export const MoviesProvider = ({ children }) => {
     const [trendingMovies, setTrendingMovies] = useState([]);
     const [popularMovies, setPopularMovies] = useState([]);
     const [topRatedMovies, setTopRatedMovies] = useState([]);
+
+    const [trendingTV, setTrendingTV] = useState([]);
+    const [popularTV, setPopularTV] = useState([]);
+    const [topRatedTV, setTopRatedTV] = useState([]);
+
     const [genres, setGenres] = useState([]);
+    const [tvGenres, setTVGenres] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [selectedMovieId, setSelectedMovieId] = useState(null);
+    const [selectedMedia, setSelectedMedia] = useState(null);
 
-
-    const [movieVideos, setMovieVideos] = useState([]);
+    const [videos, setVideos] = useState([]);
     const [videosLoading, setVideosLoading] = useState(false);
+
+    const [showPlayer, setShowPlayer] = useState(false);
+    const [playerContent, setPlayerContent] = useState(null);
 
     const [favorites, setFavorites] = useState(() => {
         const saved = localStorage.getItem("favorites");
@@ -35,16 +54,43 @@ export const MoviesProvider = ({ children }) => {
         localStorage.setItem("favorites", JSON.stringify(favorites));
     }, [favorites]);
 
-    const addToFavorites = (movie) => {
-        const exist = favorites.some((fav) => fav.id === movie.id);
+    const addToFavorites = (item, mediaType) => {
+        const type = mediaType || item.mediaType;
+        if (!type) return;
 
-        if (!exist) {
-            setFavorites([...favorites, movie])
-        }
+        const exist = favorites.some(
+            (fav) => fav.id === item.id && fav.mediaType === type
+        );
+
+        if (exist) return;
+
+        const normalizedItem = {
+            id: item.id,
+            mediaType: type,
+
+            // normalize title
+            title: item.title || item.name || "Untitled",
+
+            // normalize image
+            poster_path: item.poster_path || item.backdrop_path || null,
+
+            // normalize rating
+            vote_average: item.vote_average || 0,
+
+            // normalize dates
+            release_date: item.release_date || null,
+            first_air_date: item.first_air_date || null,
+        };
+
+        setFavorites((prev) => [...prev, normalizedItem]);
     };
 
-    const removeFromFavorites = (id) => {
-        setFavorites(favorites.filter((movie) => movie.id !== id))
+    const removeFromFavorites = (id, mediaType) => {
+        setFavorites(
+            favorites.filter(
+                (item) => !(item.id === id && item.mediaType === mediaType)
+            )
+        );
     };
 
 
@@ -53,18 +99,28 @@ export const MoviesProvider = ({ children }) => {
             try {
                 setLoading(true);
 
-                const [trending, popular, topRated, genreList] =
+                const [trending, popular, topRated, genreList, tvGenreList, tvTrending, tvPopular, tvTopRated] =
                     await Promise.all([
                         fetchTrendingMovies(),
                         fetchPopularMovies(),
                         fetchTopRatedMovies(),
                         fetchGenres(),
+                        fetchTVGenres(),
+                        fetchTrendingTVShows(),
+                        fetchPopularTVShows(),
+                        fetchTopRatedTVShows(),
                     ]);
 
                 setTrendingMovies(trending || []);
                 setPopularMovies(popular || []);
                 setTopRatedMovies(topRated || []);
                 setGenres(genreList || []);
+
+                // TV Show
+                setTVGenres(tvGenreList || []);
+                setTrendingTV(tvTrending || []);
+                setPopularTV(tvPopular || []);
+                setTopRatedTV(tvTopRated || []);
             } catch (err) {
                 console.error(err);
                 setError(err.message || "Failed to load movies");
@@ -78,13 +134,21 @@ export const MoviesProvider = ({ children }) => {
 
 
     useEffect(() => {
-        if (!selectedMovieId) return;
+        if (!selectedMedia) return;
 
         const loadVideos = async () => {
             try {
                 setVideosLoading(true);
-                const videos = await fetchMovieVideos(selectedMovieId);
-                setMovieVideos(videos || []);
+
+                let data = [];
+
+                if (selectedMedia.type === "movie") {
+                    data = await fetchMovieVideos(selectedMedia.id);
+                } else {
+                    data = await fetchTVShowVideos(selectedMedia.id);
+                }
+
+                setVideos(data || []);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -93,43 +157,91 @@ export const MoviesProvider = ({ children }) => {
         };
 
         loadVideos();
-    }, [selectedMovieId]);
+    }, [selectedMedia]);
 
 
-    const openMovie = (id) => {
-        setSelectedMovieId(id);
-        document.body.style.overflow = "hidden";
+    const openMedia = (id, type) => {
+        setSelectedMedia({ id, type });
     };
 
-    const closeMovie = () => {
-        setSelectedMovieId(null);
-        setMovieVideos([]);
-        document.body.style.overflow = "";
+    const closeMedia = () => {
+        setSelectedMedia(null);
+        setVideos([]);
     };
+
+    const openPlayer = (media) => {
+        setPlayerContent({
+            id: media.id,
+            type: media.type,
+            title: media.title,
+            poster: media.poster,
+            season: media.season || null,
+            episode: media.episode || null,
+        });
+
+        setShowPlayer(true);
+    };
+
+    const closePlayer = () => {
+        setShowPlayer(false);
+        setPlayerContent(null);
+    };
+
 
     return (
         <MoviesContext.Provider
             value={{
+                // MOVIES
                 trendingMovies,
                 popularMovies,
                 topRatedMovies,
+
+                // TV
+                trendingTV,
+                popularTV,
+                topRatedTV,
+
+                // GENRES
                 genres,
+                tvGenres,
+
+                // GLOBAL STATE
                 loading,
                 error,
 
-                selectedMovieId,
-                movieVideos,
+                // MEDIA MODAL (IMPORTANT)
+                selectedMedia,
+                openMedia,
+                closeMedia,
+
+                // VIDEOS
+                videos,
                 videosLoading,
 
-                openMovie,
-                closeMovie,
+                // PLAYER
+                showPlayer,
+                playerContent,
+                openPlayer,
+                closePlayer,
 
+                // FAVORITES
                 favorites,
                 addToFavorites,
                 removeFromFavorites,
+
             }}
         >
             {children}
+            {showPlayer && playerContent && (
+                <PlayerModal
+                    id={playerContent.id}
+                    type={playerContent.type}
+                    season={playerContent.season}
+                    episode={playerContent.episode}
+                    onClose={closePlayer}
+                />
+            )}
+
         </MoviesContext.Provider>
     );
 };

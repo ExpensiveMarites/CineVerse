@@ -1,11 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, Search, X, Menu, Heart } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { fetchSearchMovies, getImageUrl, fetchGenres } from "../../services/Api";
+import { fetchSearchMovies, fetchSearchTVShows, getImageUrl, fetchGenres } from "../../services/Api";
 import { useMovies } from "../../context/MoviesContext";
 import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const { genres, tvGenres, openMedia, favorites } = useMovies();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -16,9 +17,6 @@ function Navbar() {
 
   const searchContainerRef = useRef(null);
 
-  const { openMovie, favorites } = useMovies();
-
-  const [genres, setgenres] = useState([]);
   const navigate = useNavigate();
 
 
@@ -38,9 +36,25 @@ function Navbar() {
 
     const delay = setTimeout(async () => {
       setIsSearching(true);
-      const results = await fetchSearchMovies(searchQuery);
-      setSearchResults(results || []);
-      setIsSearching(false);
+
+      try {
+        const [movies, tv] = await Promise.all([
+          fetchSearchMovies(searchQuery),
+          fetchSearchTVShows(searchQuery)
+        ]);
+
+        const combined = [
+          ...(movies || []).map(m => ({ ...m, mediaType: "movie" })),
+          ...(tv || []).map(t => ({ ...t, mediaType: "tv" }))
+        ];
+
+        setSearchResults(combined);
+      } catch (err) {
+        console.error(err);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
     }, 500);
 
     return () => clearTimeout(delay);
@@ -62,13 +76,7 @@ function Navbar() {
     };
   }, [showSearchModal]);
 
-  useEffect(() => {
-    const loadGenres = async () => {
-      const data = await fetchGenres();
-      setgenres(data);
-    }
-    loadGenres();
-  }, []);
+
 
   const [isTablet, setIsTablet] = useState(false);
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
@@ -107,14 +115,11 @@ function Navbar() {
               Home
             </Link>
 
-            <a href="/#trending" className="hover:text-brand-red transition">
-              Trending
+            <a href="/" className="hover:text-brand-red transition">
+              Movie
             </a>
-            <a href="/#popular" className="hover:text-brand-red transition">
-              Popular
-            </a>
-            <a href="/#top-rated" className="hover:text-brand-red transition">
-              Top Rated
+            <a href="/TV-Show" className="hover:text-brand-red transition">
+              TV Shows
             </a>
 
             <div className="relative group">
@@ -122,75 +127,53 @@ function Navbar() {
                 Genre
               </span>
 
-              <div className="absolute left-0 mt-2 min-w-[450px] bg-neutral-900 text-white rounded-xl shadow-xl
-               opacity-0 invisible group-hover:opacity-100 group-hover:visible
-               translate-y-2 group-hover:translate-y-0
-               transition-all duration-300 z-50 p-4">
-
-                <p className="text-red-600 ">Browse Genres</p>
-                <ul className="grid grid-cols-4 ">
-                  {genres.map((genre) => (
-                    <li
-                      key={genre.id}
-                      onClick={() => navigate(`/genre/${genre.id}`)}
-                      className="px-3 py-2 rounded-md  hover:bg-red-700 cursor-pointer text-sm text-center whitespace-nowrap"
-                    >
-                      {genre.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-            </div>
-
-
-            {/* <div className="relative">
-              <button
-                onClick={() => {
-                  if (isTablet) {
-                    navigate(
-                      genres.length > 0 ? `/genre/${genres[0].id}` : "/genre"
-                    );
-                    setShowMobileMenu(false);
-                  }
-                }}
-                className="hover:text-brand-red transition cursor-pointer"
+              <div
+                className="absolute left-0 mt-2 min-w-[500px] bg-neutral-900 text-white rounded-xl shadow-xl
+                          opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                          translate-y-2 group-hover:translate-y-0
+                          transition-all duration-300 z-50 p-5 space-y-4"
               >
-                Genre
-              </button>
 
-              
-              <AnimatePresence>
-                {showGenreDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute left-0 mt-2 min-w-[450px] bg-neutral-900 text-white rounded-xl shadow-xl z-50 p-4"
-                  >
+                {/* MOVIES */}
+                <div>
+                  <p className="text-red-600 mb-2 font-semibold">
+                    Movie Genres
+                  </p>
 
-                    <p className="text-red-600">Browse Genres</p>
+                  <ul className="grid grid-cols-3 mb-3">
+                    {genres.map((genre) => (
+                      <li
+                        key={`movie-${genre.id}`}
+                        onClick={() => navigate(`/genre/movie/${genre.id}`)}
+                        className="px-3 py-2 rounded-md hover:bg-red-700 cursor-pointer text-sm text-center whitespace-nowrap truncate transition"
+                      >
+                        {genre.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                    <ul className="grid grid-cols-4">
-                      {genres.map((genre) => (
-                        <li
-                          key={genre.id}
-                          onClick={() => {
-                            navigate(`/genre/${genre.id}`);
-                            setShowGenreDropdown(false);
-                          }}
-                          className="px-3 py-2 rounded-md hover:bg-red-700 cursor-pointer text-sm text-center whitespace-nowrap"
-                        >
-                          {genre.name}
-                        </li>
-                      ))}
-                    </ul>
+                {/* TV */}
+                <div>
+                  <p className="text-yellow-400 mb-2 font-semibold mt-2">
+                    TV Genres
+                  </p>
 
-                  </motion.div>
-                )}
-              </AnimatePresence> */}
+                  <ul className="grid grid-cols-3">
+                    {tvGenres.map((genre) => (
+                      <li
+                        key={`tv-${genre.id}`}
+                        onClick={() => navigate(`/genre/tv/${genre.id}`)}
+                        className="px-3 py-2 rounded-md hover:bg-yellow-500 cursor-pointer text-sm text-center whitespace-nowrap truncate transition"
+                      >
+                        {genre.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            {/* </div> */}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -204,7 +187,7 @@ function Navbar() {
             <Search size={22} />
           </button>
 
-          {/* SEARCH MODAL (unchanged) */}
+
           <AnimatePresence>
             {showSearchModal && (
               <motion.div
@@ -256,22 +239,27 @@ function Navbar() {
                               <li key={movie.id} className="hover:bg-neutral-700 transition">
                                 <button
                                   onClick={() => {
-                                    openMovie(movie.id);
+                                    if (movie.mediaType === "tv") {
+                                      openMedia(movie.id, "tv");
+                                    } else {
+                                      openMedia(movie.id, "movie");
+                                    }
+
                                     setShowSearchModal(false);
                                     setSearchQuery("");
                                   }}
                                   className="flex items-center gap-3 w-full text-left p-3"
                                 >
                                   <img
-                                    src={getImageUrl(movie.poster_path, "w92")}
+                                    src={movie.poster_path ? getImageUrl(movie.poster_path, "w92") : "https://via.placeholder.com/92x138"}
                                     className="w-10 h-14 rounded object-cover bg-neutral-700"
                                   />
                                   <div className="flex-1">
                                     <p className="text-sm font-medium text-white truncate">
-                                      {movie.title}
+                                      {movie.title || movie.name}
                                     </p>
                                     <p className="text-xs text-neutral-400">
-                                      {movie.release_date}
+                                      {movie.release_date || movie.first_air_date}
                                     </p>
                                   </div>
                                 </button>
@@ -336,21 +324,27 @@ function Navbar() {
               Home
             </Link>
 
-            <a href="/#trending" className="block px-4 py-3 text-white">
-              Trending
+            <a href="/" className="block px-4 py-3 text-white">
+              Movie
             </a>
             <a href="/#popular" className="block px-4 py-3 text-white">
-              Popular
+              TV Shows
             </a>
-            <a href="/#top-rated" className="block px-4 py-3 text-white">
-              Top Rated
-            </a>
+
             <Link
-              to={genres.length > 0 ? `/genre/${genres[0].id}` : "#"}
-              className="block px-4 py-3 text-white"
+              to="/genre/movie/28"
               onClick={() => setShowMobileMenu(false)}
+              className="block px-4 py-3 text-white"
             >
-              Genre
+              Movie Genres
+            </Link>
+
+            <Link
+              to="/genre/tv/10759"
+              onClick={() => setShowMobileMenu(false)}
+              className="block px-4 py-3 text-white"
+            >
+              TV Genres
             </Link>
 
 

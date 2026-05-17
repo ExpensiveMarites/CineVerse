@@ -1,5 +1,10 @@
 const API_KEY = "41f5760a47d628244e79423b6ce18616";
 const BASE_URL = "https://api.themoviedb.org/3";
+const VIDEO_PROVIDERS = [
+    "https://vidsrcme.su",
+    "https://vsembed.su",
+    "https://vidsrc-embed.ru"
+];
 
 // TRENDING
 export const fetchTrendingMovies = async () => {
@@ -157,6 +162,173 @@ export const fetchMovieVideos = async (movieId) => {
         return sortedVideos;
     } catch (error) {
         console.error("Error fetching movie videos", error);
+        return [];
+    }
+};
+
+export const getVidSrcMovieUrl = (movieId) => {
+    return {
+        providers: VIDEO_PROVIDERS.map((base) =>
+            `${base}/embed/movie/${movieId}`
+        )
+    };
+};
+
+// export const getVidSrcMovieUrl = (movieId) => {
+//     return `https://vidsrc.io/embed/movie${movieId}?autoplay=1`;
+// };
+
+
+// TV SHOWS API
+
+export const fetchTrendingTVShows = async () => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/trending/tv/week?api_key=${API_KEY}&language=en-US`
+        );
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching trending TV shows", error);
+        return [];
+    }
+};
+
+export const fetchPopularTVShows = async () => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=1`
+        );
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching popular TV shows", error);
+        return [];
+    }
+};
+
+export const fetchTopRatedTVShows = async () => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`
+        );
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching top rated TV shows", error);
+        return [];
+    }
+};
+
+export const fetchTVShowDetails = async (tvId) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`
+        );
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching TV show details", error);
+        return null;
+    }
+};
+
+export const fetchSearchTVShows = async (query) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`
+        );
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error searching TV shows", error);
+        return [];
+    }
+};
+
+export const fetchTVShowVideos = async (tvId) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/tv/${tvId}/videos?api_key=${API_KEY}&language=en-US`
+        );
+
+        const data = await response.json();
+
+        if (!data.results) return [];
+
+        return data.results.filter(
+            (video) => video.type === "Trailer" || video.type === "Teaser"
+        );
+    } catch (error) {
+        console.error("Error fetching TV videos", error);
+        return [];
+    }
+};
+
+export const getVidSrcTVUrl = (tvId, season, episode) => {
+    return {
+        providers: VIDEO_PROVIDERS.map(
+            (base) => `${base}/embed/tv/${tvId}/${season}/${episode}`
+        )
+    };
+};
+
+export const fetchTVSeasons = async (tvId) => {
+    try {
+        const res = await fetch(
+            `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`
+        );
+
+        const data = await res.json();
+        return data.seasons;
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+};
+
+export const fetchSeasonDetails = async (tvId, seasonNumber) => {
+    try {
+        const res = await fetch(
+            `${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}&language=en-US`
+        );
+
+        const data = await res.json();
+        return data.episodes;
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+};
+
+export const fetchTVGenres = async () => {
+    try {
+        const res = await fetch(
+            `${BASE_URL}/genre/tv/list?api_key=${API_KEY}&language=en-US`
+        );
+        const data = await res.json();
+        return data.genres;
+    } catch (error) {
+        console.error("Error fetching TV genres", error);
+        return [];
+    }
+};
+
+export const fetchTVByGenre = async (genreId, page = 1) => {
+    try {
+        const res = await fetch(
+            `${BASE_URL}/discover/tv?api_key=${API_KEY}&language=en-US&with_genres=${genreId}&page=${page}`
+        );
+
+        const data = await res.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching TV shows by genre", error);
         return [];
     }
 };

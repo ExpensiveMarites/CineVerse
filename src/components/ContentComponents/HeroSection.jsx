@@ -9,6 +9,7 @@ function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const { openPlayer } = useMovies();
 
   const featuredMovies = trendingMovies?.slice(0, 5) || [];
 
@@ -135,7 +136,9 @@ function HeroSection() {
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
 
             {/* WATCH NOW */}
-            <button className="w-full sm:w-auto bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
+            <button
+              onClick={() => openPlayer(currentMovie.id)}
+              className="w-full sm:w-auto bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -149,7 +152,7 @@ function HeroSection() {
 
             {/* WATCH LIST */}
             <button
-              onClick={() => addToFavorites(currentMovie)}
+              onClick={() => addToFavorites(currentMovie, "movie")}
 
               className="w-full sm:w-auto bg-neutral-800 hover:bg-neutral-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all"
             >

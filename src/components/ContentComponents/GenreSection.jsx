@@ -5,7 +5,7 @@ import { fetchMoviesByGenre, getImageUrl } from "../../services/Api";
 
 function GenreSection() {
 
-  const { genres, loading, openMovie } = useMovies();
+  const { genres, loading, openMedia } = useMovies();
 
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -183,7 +183,7 @@ function GenreSection() {
                 <div
                   key={movie.id}
                   className="group cursor-pointer transition-transform duration-500 hover:-translate-y-1"
-                  onClick={() => openMovie(movie.id)}
+                  onClick={() => openMedia(movie.id, "movie")}
                 >
 
                   <div className="
@@ -276,11 +276,11 @@ function GenreSection() {
               ))}
             </div>
 
-            {/* ✅ CINEMATIC SHOW MORE */}
+
             {visibleCount < genreMovies.length && (
               <div className="flex justify-center mt-10">
                 <button
-                  onClick={() => navigate(`/genre/${selectedGenre.id}`)}
+                  onClick={() => navigate(`/genre/movie/${selectedGenre.id}`)}
                   className="
                   relative px-8 py-3 rounded-full
                   bg-gradient-to-r from-red-600 to-red-800
