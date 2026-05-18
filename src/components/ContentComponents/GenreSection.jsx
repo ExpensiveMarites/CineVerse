@@ -93,7 +93,7 @@ function GenreSection() {
       <section className="py-16 bg-black relative overflow-hidden">
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.15),transparent_60%)] animate-pulse" />
-        <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        <div className="absolute inset-0 opacity-10" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="h-64 flex items-center justify-center">
@@ -113,7 +113,7 @@ function GenreSection() {
     <section className="py-16 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden">
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.12),transparent_65%)] animate-pulse pointer-events-none" />
-      <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay pointer-events-none" />
+      <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-80 pointer-events-none" />
       <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.9)] pointer-events-none" />
 

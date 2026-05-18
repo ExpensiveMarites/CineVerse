@@ -96,7 +96,7 @@ function MovieSlider({
     >
       {/* BACKGROUND EFFECTS */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.10),transparent_70%)] pointer-events-none animate-pulse" />
-      <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none mix-blend-overlay" />
+      <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-90 pointer-events-none" />
 
       <div className="absolute inset-0 shadow-[inset_0_0_140px_rgba(0,0,0,0.95)] pointer-events-none" />
