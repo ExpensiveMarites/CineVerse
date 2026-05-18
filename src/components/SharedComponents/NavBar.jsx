@@ -115,12 +115,13 @@ function Navbar() {
               Home
             </Link>
 
-            <a href="/" className="hover:text-brand-red transition">
+            <Link to="/" className="hover:text-brand-red transition">
               Movie
-            </a>
-            <a href="/TV-Show" className="hover:text-brand-red transition">
+            </Link>
+
+            <Link to="/tv-show" className="hover:text-brand-red transition">
               TV Shows
-            </a>
+            </Link>
 
             <div className="relative group">
               <button

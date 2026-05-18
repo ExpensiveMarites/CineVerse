@@ -25,7 +25,7 @@ function App() {
           <Routes>
 
             <Route path="/" element={<MovieContent />} />
-            <Route path="TV-Show" element={<TVShowContent />} />
+            <Route path="tv-show" element={<TVShowContent />} />
             <Route
               path="/genre/movie/:genreId"
               element={<MediaGenrePage mediaType="movie" />}
