@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
 const VIDEO_PROVIDERS = [
+    "https://vidsrcme.ru",
     "https://vidsrcme.su",
-    "https://vsembed.su",
     "https://vidsrc-embed.ru"
 ];
 

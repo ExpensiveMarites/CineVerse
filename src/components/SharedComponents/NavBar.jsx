@@ -99,16 +99,16 @@ function Navbar() {
       className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled ? "glass py-5" : "bg-transparent py-5"
         }`}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
 
         {/* LEFT */}
-        <div className="flex items-center gap-10">
-          <Link to="/" className="text-3xl font-black tracking-tighter cursor-pointer">
+        <div className="flex items-center gap-4 md:gap-6 lg:gap-10">
+          <Link to="/" className="text-2xl md:text-3xl font-black tracking-tighter cursor-pointer whitespace-nowrap">
             <span className="text-brand-red">CINE</span>
             <span className="text-white">VERSE</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-white">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium text-white">
 
 
             <Link to="/" className="hover:text-brand-red transition">
@@ -123,15 +123,21 @@ function Navbar() {
             </a>
 
             <div className="relative group">
-              <span className="hover:text-brand-red transition cursor-pointer">
+              <button
+                onClick={() => isTablet && setShowGenreDropdown(!showGenreDropdown)}
+                className="hover:text-brand-red transition cursor-pointer"
+              >
                 Genre
-              </span>
+              </button>
 
               <div
-                className="absolute left-0 mt-2 min-w-[500px] bg-neutral-900 text-white rounded-xl shadow-xl
-                          opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                          translate-y-2 group-hover:translate-y-0
-                          transition-all duration-300 z-50 p-5 space-y-4"
+                className={`absolute mt-2 w-[420px] lg:min-w-[500px] bg-neutral-900 text-white rounded-xl shadow-xl
+                  transition-all duration-300 z-50 p-5 space-y-4lg:opacity-0 lg:invisible
+                  lg:group-hover:opacity-100 lg:group-hover:visible
+                  lg:translate-y-2 lg:group-hover:translate-y-0
+                  ${isTablet ? "left-1/2 -translate-x-1/2" : "left-0"}
+                  ${showGenreDropdown ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-2"}
+                `}
               >
 
                 {/* MOVIES */}
@@ -140,12 +146,15 @@ function Navbar() {
                     Movie Genres
                   </p>
 
-                  <ul className="grid grid-cols-3 mb-3">
+                  <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-1 mb-3">
                     {genres.map((genre) => (
                       <li
                         key={`movie-${genre.id}`}
-                        onClick={() => navigate(`/genre/movie/${genre.id}`)}
-                        className="px-3 py-2 rounded-md hover:bg-red-700 cursor-pointer text-sm text-center whitespace-nowrap truncate transition"
+                        onClick={() => {
+                          navigate(`/genre/movie/${genre.id}`);
+                          setShowGenreDropdown(false);
+                        }}
+                        className="px-2 lg:px-3 py-2 rounded-md hover:bg-red-700 cursor-pointer text-xs lg:text-sm text-center whitespace-nowrap truncate transition"
                       >
                         {genre.name}
                       </li>
@@ -159,12 +168,15 @@ function Navbar() {
                     TV Genres
                   </p>
 
-                  <ul className="grid grid-cols-3">
+                  <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-1">
                     {tvGenres.map((genre) => (
                       <li
                         key={`tv-${genre.id}`}
-                        onClick={() => navigate(`/genre/tv/${genre.id}`)}
-                        className="px-3 py-2 rounded-md hover:bg-yellow-500 cursor-pointer text-sm text-center whitespace-nowrap truncate transition"
+                        onClick={() => {
+                          navigate(`/genre/tv/${genre.id}`);
+                          setShowGenreDropdown(false);
+                        }}
+                        className="px-2 lg:px-3 py-2 rounded-md hover:bg-yellow-500 cursor-pointer text-xs lg:text-sm text-center whitespace-nowrap truncate transition"
                       >
                         {genre.name}
                       </li>

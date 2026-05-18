@@ -199,7 +199,7 @@ function MoviesDetail() {
                                 {/* fallback to poster if no backdrop */}
                                 {!movie?.backdrop_path && (
                                     <img
-                                        src={movie?.poster_path ? getImageUrl(movie.poster_path) : ""}
+                                        src={getImageUrl(movie?.poster_path)}
                                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                                         alt="poster-fallback"
                                     />

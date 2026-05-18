@@ -116,7 +116,14 @@ function TVHeroSection() {
 
                         {/* WATCH NOW */}
                         <button
-                            onClick={() => openPlayer(currentShow.id)}
+                            onClick={() => {
+                                openPlayer({
+                                    id: currentShow?.id,
+                                    type: "tv",
+                                    title: currentShow?.title,
+                                    poster: currentShow?.poster_path,
+                                });
+                            }}
                             className="w-full sm:w-auto bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
