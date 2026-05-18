@@ -12,6 +12,7 @@
     "fix": "biome check . --write"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.11.0",
     "react": "^19.2.5",
