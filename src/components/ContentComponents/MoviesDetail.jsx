@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchMovieDetails, fetchTVShowDetails, getImageUrl } from "../../services/Api";
 import { useMovies } from "../../context/MoviesContext";
 
 function MoviesDetail() {
-    const { selectedMedia, closeMedia, videos, videosLoading, addToFavorites, openPlayer } = useMovies();
+    const navigate = useNavigate();
+    const { selectedMedia, closeMedia, videos, videosLoading, addToFavorites } = useMovies();
 
     const movieId = selectedMedia?.id;
 
@@ -29,28 +31,39 @@ function MoviesDetail() {
     };
 
     useEffect(() => {
+        if (!movieId || !selectedMedia?.type) return;
+
+        let cancelled = false;
+
         async function getDetails() {
+            setIsLoading(true);
+            setIsError(null);
+
             try {
-                setIsLoading(true);
-                setIsError(null);
+                const data =
+                    selectedMedia.type === "movie"
+                        ? await fetchMovieDetails(movieId)
+                        : await fetchTVShowDetails(movieId);
 
-                if (selectedMedia.type === "movie") {
-                    const movieData = await fetchMovieDetails(movieId);
-                    setMovie(movieData);
-                } else {
-                    const tvData = await fetchTVShowDetails(movieId);
-                    setMovie(tvData);
+                if (!cancelled && data?.id === movieId) {
+                    setMovie(data);
                 }
-
-            } catch (err) {
-                console.error(err);
-                setIsError("Failed to load details");
+            } catch {
+                if (!cancelled) {
+                    setIsError("Failed to load details");
+                }
             } finally {
-                setIsLoading(false);
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
         }
 
-        if (movieId) getDetails();
+        getDetails();
+
+        return () => {
+            cancelled = true;
+        };
     }, [movieId, selectedMedia?.type]);
 
     const trailer = videos && videos.length > 0 ? videos[0] : null;
@@ -284,13 +297,11 @@ function MoviesDetail() {
                                 {/* WATCH NOW */}
                                 <button
                                     onClick={() => {
-
-                                        openPlayer({
-                                            id: movie.id,
-                                            type: selectedMedia.type,
-                                            title: movie.title,
-                                            poster: movie.poster_path,
-                                        });
+                                        // close the detail modal before navigating to the watch page
+                                        try {
+                                            closeMedia();
+                                        } catch (e) {}
+                                        navigate(`/watch/movie/${movie.id}`);
                                     }}
                                     className="flex-1 bg-brand-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
                                     <svg

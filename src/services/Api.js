@@ -1,9 +1,31 @@
 const API_KEY = "41f5760a47d628244e79423b6ce18616";
 const BASE_URL = "https://api.themoviedb.org/3";
-const VIDEO_PROVIDERS = [
-    "https://vidsrcme.su",
-    "https://vsembed.su",
-    "https://vidsrc-embed.ru"
+
+export const EMBED_SERVERS = [
+    {
+        id: "vidzee",
+        name: "Vidzee",
+        movie: "https://player.vidzee.wtf/embed/movie",
+        tv: "https://player.vidzee.wtf/embed/tv",
+    },
+    {
+        id: "vidrock",
+        name: "VidRock",
+        movie: "https://vidrock.ru/movie",
+        tv: "https://vidrock.ru/tv",
+    },
+    {
+        id: "vidfast",
+        name: "VidFast",
+        movie: "https://vidfast.vc/movie",
+        tv: "https://vidfast.vc/tv",
+    },
+    {
+        id: "vidsrc",
+        name: "VidSrc",
+        movie: "https://vidsrc.sbs/embed/movie",
+        tv: "https://vidsrc.sbs/embed/tv",
+    },
 ];
 
 // TRENDING
@@ -114,8 +136,9 @@ export const fetchMovieDetails = async (movieId) => {
 // SEARCH
 export const fetchSearchMovies = async (query) => {
     try {
+        const encodedQuery = encodeURIComponent(query.trim());
         const response = await fetch(
-            `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`
+            `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodedQuery}&page=1&include_adult=false`
         );
 
         const data = await response.json();
@@ -168,9 +191,17 @@ export const fetchMovieVideos = async (movieId) => {
 
 export const getVidSrcMovieUrl = (movieId) => {
     return {
-        providers: VIDEO_PROVIDERS.map((base) =>
-            `${base}/embed/movie/${movieId}`
-        )
+        providers: EMBED_SERVERS.map((server) =>
+            `${server.movie}/${movieId}`
+        ),
+    };
+};
+
+export const getVidSrcTVUrl = (tvId, season, episode) => {
+    return {
+        providers: EMBED_SERVERS.map((server) =>
+            `${server.tv}/${tvId}/${season}/${episode}`
+        ),
     };
 };
 
@@ -239,8 +270,9 @@ export const fetchTVShowDetails = async (tvId) => {
 
 export const fetchSearchTVShows = async (query) => {
     try {
+        const encodedQuery = encodeURIComponent(query.trim());
         const response = await fetch(
-            `${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`
+            `${BASE_URL}/search/tv?api_key=${API_KEY}&language=en-US&query=${encodedQuery}&page=1&include_adult=false`
         );
 
         const data = await response.json();
@@ -270,12 +302,59 @@ export const fetchTVShowVideos = async (tvId) => {
     }
 };
 
-export const getVidSrcTVUrl = (tvId, season, episode) => {
-    return {
-        providers: VIDEO_PROVIDERS.map(
-            (base) => `${base}/embed/tv/${tvId}/${season}/${episode}`
-        )
-    };
+export const fetchMovieRecommendations = async (movieId) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/movie/${movieId}/recommendations?api_key=${API_KEY}&language=en-US&page=1`
+        );
+
+        const data = await response.json();
+        return data.results || [];
+    } catch (error) {
+        console.error("Error fetching movie recommendations", error);
+        return [];
+    }
+};
+
+export const fetchTVRecommendations = async (tvId) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/tv/${tvId}/recommendations?api_key=${API_KEY}&language=en-US&page=1`
+        );
+
+        const data = await response.json();
+        return data.results || [];
+    } catch (error) {
+        console.error("Error fetching TV recommendations", error);
+        return [];
+    }
+};
+export const getEmbedUrls = ({ id, type, season, episode }) => {
+    const mediaId = Number(id);
+
+    if (!Number.isInteger(mediaId) || mediaId <= 0) return [];
+
+    if (type === "movie") {
+        return getVidSrcMovieUrl(mediaId).providers;
+    }
+
+    if (type === "tv") {
+        const seasonNumber = Number(season);
+        const episodeNumber = Number(episode);
+
+        if (
+            !Number.isInteger(seasonNumber) ||
+            !Number.isInteger(episodeNumber) ||
+            seasonNumber <= 0 ||
+            episodeNumber <= 0
+        ) {
+            return [];
+        }
+
+        return getVidSrcTVUrl(mediaId, seasonNumber, episodeNumber).providers;
+    }
+
+    return [];
 };
 
 export const fetchTVSeasons = async (tvId) => {

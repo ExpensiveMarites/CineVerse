@@ -41,6 +41,8 @@ function MediaGenrePage({ mediaType }) {
 
 
     useEffect(() => {
+        let cancelled = false;
+
         const loadMovies = async () => {
             setLoading(true);
             setPage(1);
@@ -51,12 +53,18 @@ function MediaGenrePage({ mediaType }) {
                     ? await fetchMoviesByGenre(genreId, 1)
                     : await fetchTVByGenre(genreId, 1);
 
-            setMovies(sortMovies(data || [], filter));
-            setLoading(false);
+            if (!cancelled) {
+                setMovies(sortMovies(data || [], filter));
+                setLoading(false);
+            }
         };
 
         loadMovies();
-    }, [genreId]);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [genreId, mediaType, filter]);
 
     // LOAD MORE
     const loadMoreMovies = async () => {

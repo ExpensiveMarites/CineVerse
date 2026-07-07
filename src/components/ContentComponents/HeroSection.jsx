@@ -9,7 +9,7 @@ function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const { openPlayer } = useMovies();
+  const navigate = useNavigate();
 
   const featuredMovies = trendingMovies?.slice(0, 5) || [];
 
@@ -138,12 +138,7 @@ function HeroSection() {
             {/* WATCH NOW */}
             <button
               onClick={() => {
-                openPlayer({
-                  id: currentMovie?.id,
-                  type: "movie",
-                  title: currentMovie?.title,
-                  poster: currentMovie?.poster_path,
-                });
+                navigate(`/watch/movie/${currentMovie?.id}`);
               }}
               className="w-full sm:w-auto bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
               <svg

@@ -36,6 +36,7 @@ function TVGenreSection() {
     }, [loading, tvGenres]);
 
     useEffect(() => {
+        let cancelled = false;
 
         const loadShows = async () => {
 
@@ -45,6 +46,8 @@ function TVGenreSection() {
 
             const data = await fetchTVByGenre(selectedGenre.id);
 
+            if (cancelled) return;
+
             setGenreShows(data || []);
 
             setVisibleCount(12);
@@ -53,6 +56,10 @@ function TVGenreSection() {
         };
 
         loadShows();
+
+        return () => {
+            cancelled = true;
+        };
 
     }, [selectedGenre]);
 

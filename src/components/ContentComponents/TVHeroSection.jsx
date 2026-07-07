@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../services/Api";
 import { useMovies } from "../../context/MoviesContext";
 
 function TVHeroSection() {
-    const { trendingTV, loading, addToFavorites, openPlayer } = useMovies();
+    const { trendingTV, loading, addToFavorites } = useMovies();
+    const navigate = useNavigate();
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [selectedShow, setSelectedShow] = useState(null);
@@ -117,12 +119,7 @@ function TVHeroSection() {
                         {/* WATCH NOW */}
                         <button
                             onClick={() => {
-                                openPlayer({
-                                    id: currentShow?.id,
-                                    type: "tv",
-                                    title: currentShow?.title,
-                                    poster: currentShow?.poster_path,
-                                });
+                                navigate(`/watch/tv/${currentShow?.id}`);
                             }}
                             className="w-full sm:w-auto bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-all">
                             <svg
@@ -133,7 +130,7 @@ function TVHeroSection() {
                             >
                                 <path d="M8 5v14l11-7z" />
                             </svg>
-                            Watch Now
+                            View Episodes
                         </button>
 
                         {/* ADD TO WATCHLIST */}

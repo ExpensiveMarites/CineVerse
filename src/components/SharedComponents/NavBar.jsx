@@ -29,18 +29,22 @@ function Navbar() {
 
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const query = searchQuery.trim();
+
+    if (!query) {
       setSearchResults([]);
       return;
     }
+
+    let cancelled = false;
 
     const delay = setTimeout(async () => {
       setIsSearching(true);
 
       try {
         const [movies, tv] = await Promise.all([
-          fetchSearchMovies(searchQuery),
-          fetchSearchTVShows(searchQuery)
+          fetchSearchMovies(query),
+          fetchSearchTVShows(query)
         ]);
 
         const combined = [
@@ -48,16 +52,25 @@ function Navbar() {
           ...(tv || []).map(t => ({ ...t, mediaType: "tv" }))
         ];
 
-        setSearchResults(combined);
+        if (!cancelled) {
+          setSearchResults(combined);
+        }
       } catch (err) {
         console.error(err);
-        setSearchResults([]);
+        if (!cancelled) {
+          setSearchResults([]);
+        }
       } finally {
-        setIsSearching(false);
+        if (!cancelled) {
+          setIsSearching(false);
+        }
       }
     }, 500);
 
-    return () => clearTimeout(delay);
+    return () => {
+      cancelled = true;
+      clearTimeout(delay);
+    };
   }, [searchQuery]);
 
   useEffect(() => {
@@ -249,7 +262,7 @@ function Navbar() {
                         {!isSearching && searchResults.length > 0 && (
                           <ul className="divide-y divide-neutral-700 max-h-80 overflow-y-auto">
                             {searchResults.map((movie) => (
-                              <li key={movie.id} className="hover:bg-neutral-700 transition">
+                              <li key={`${movie.mediaType}-${movie.id}`} className="hover:bg-neutral-700 transition">
                                 <button
                                   onClick={() => {
                                     if (movie.mediaType === "tv") {

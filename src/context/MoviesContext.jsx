@@ -9,12 +9,7 @@ import {
     fetchTrendingTVShows,
     fetchPopularTVShows,
     fetchTopRatedTVShows,
-    fetchTVShowDetails,
-    fetchSearchTVShows,
     fetchTVShowVideos,
-    getVidSrcTVUrl,
-    fetchTVSeasons,
-    fetchSeasonDetails,
     fetchTVGenres
 } from "../services/Api";
 
@@ -46,12 +41,21 @@ export const MoviesProvider = ({ children }) => {
     const [playerContent, setPlayerContent] = useState(null);
 
     const [favorites, setFavorites] = useState(() => {
-        const saved = localStorage.getItem("favorites");
-        return saved ? JSON.parse(saved) : [];
+        try {
+            const saved = localStorage.getItem("favorites");
+            return saved ? JSON.parse(saved) : [];
+        } catch (err) {
+            console.error("Error reading favorites", err);
+            return [];
+        }
     });
 
     useEffect(() => {
-        localStorage.setItem("favorites", JSON.stringify(favorites));
+        try {
+            localStorage.setItem("favorites", JSON.stringify(favorites));
+        } catch (err) {
+            console.error("Error saving favorites", err);
+        }
     }, [favorites]);
 
     const addToFavorites = (item, mediaType) => {
@@ -136,32 +140,50 @@ export const MoviesProvider = ({ children }) => {
     useEffect(() => {
         if (!selectedMedia) return;
 
+        let cancelled = false;
+        const media = selectedMedia;
+
+        setVideos([]);
+
         const loadVideos = async () => {
             try {
                 setVideosLoading(true);
 
                 let data = [];
 
-                if (selectedMedia.type === "movie") {
-                    data = await fetchMovieVideos(selectedMedia.id);
+                if (media.type === "movie") {
+                    data = await fetchMovieVideos(media.id);
                 } else {
-                    data = await fetchTVShowVideos(selectedMedia.id);
+                    data = await fetchTVShowVideos(media.id);
                 }
 
-                setVideos(data || []);
+                if (!cancelled) {
+                    setVideos(data || []);
+                }
             } catch (err) {
                 console.error(err);
             } finally {
-                setVideosLoading(false);
+                if (!cancelled) {
+                    setVideosLoading(false);
+                }
             }
         };
 
         loadVideos();
+
+        return () => {
+            cancelled = true;
+        };
     }, [selectedMedia]);
 
 
     const openMedia = (id, type) => {
-        setSelectedMedia({ id, type });
+        const mediaId = Number(id);
+
+        if (!Number.isInteger(mediaId) || mediaId <= 0) return;
+        if (type !== "movie" && type !== "tv") return;
+
+        setSelectedMedia({ id: mediaId, type });
     };
 
     const closeMedia = () => {
@@ -170,13 +192,40 @@ export const MoviesProvider = ({ children }) => {
     };
 
     const openPlayer = (media) => {
-        setPlayerContent({
-            id: media.id,
-            type: media.type,
+        const id = Number(media?.id);
+        const type = media?.type;
+
+        if (!Number.isInteger(id) || id <= 0) return;
+        if (type !== "movie" && type !== "tv") return;
+
+        const nextContent = {
+            id,
+            type,
             title: media.title,
             poster: media.poster,
-            season: media.season || null,
-            episode: media.episode || null,
+            season: null,
+            episode: null,
+        };
+
+        if (type === "tv") {
+            const season = Number(media.season);
+            const episode = Number(media.episode);
+
+            if (
+                !Number.isInteger(season) ||
+                !Number.isInteger(episode) ||
+                season <= 0 ||
+                episode <= 0
+            ) {
+                return;
+            }
+
+            nextContent.season = season;
+            nextContent.episode = episode;
+        }
+
+        setPlayerContent({
+            ...nextContent,
         });
 
         setShowPlayer(true);

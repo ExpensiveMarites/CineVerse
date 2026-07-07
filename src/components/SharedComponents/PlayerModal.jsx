@@ -1,10 +1,5 @@
 import { useEffect } from "react";
-
-const VIDEO_PROVIDERS = [
-    "https://vidsrcme.ru",
-    "https://vidsrcme.su",
-    "https://vidsrc-embed.ru"
-];
+import { getEmbedUrls } from "../../services/Api";
 
 function PlayerModal({ id, type, onClose, season, episode }) {
 
@@ -15,23 +10,8 @@ function PlayerModal({ id, type, onClose, season, episode }) {
         };
     }, []);
 
-    const getSrc = () => {
-        const base = VIDEO_PROVIDERS[0];
-
-        // MOVIE
-        if (type === "movie") {
-            return `${base}/embed/movie/${id}`;
-        }
-
-        // TV SHOW
-        if (type === "tv") {
-            const s = season || 1;
-            const e = episode || 1;
-            return `${base}/embed/tv/${id}/${s}/${e}`;
-        }
-
-        return "";
-    };
+    const src = getEmbedUrls({ id, type, season, episode })[0] || "";
+    const playerKey = `${type}-${id}-${season || "movie"}-${episode || "movie"}`;
 
     return (
         <div className="fixed inset-0 bg-black z-[999]">
@@ -43,13 +23,23 @@ function PlayerModal({ id, type, onClose, season, episode }) {
             >
                 ✕
             </button>
+            
+            
 
             {/* IFRAME */}
-            <iframe
-                src={getSrc()}
-                className="w-screen h-screen"
-                allowFullScreen
-            />
+            {src ? (
+                <iframe
+                    key={playerKey}
+                    src={src}
+                    className="w-screen h-screen"
+                    allowFullScreen
+                    title="CineVerse Player"
+                />
+            ) : (
+                <div className="w-screen h-screen flex items-center justify-center text-white">
+                    Unable to load this title.
+                </div>
+            )}
         </div>
     );
 }

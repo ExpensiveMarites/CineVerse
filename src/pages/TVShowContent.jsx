@@ -10,8 +10,6 @@ function TVShowContent() {
         trendingTV,
         popularTV,
         topRatedTV,
-        selectedTVId,
-        closeTV,
         error,
     } = useMovies();
 
@@ -84,17 +82,6 @@ function TVShowContent() {
                     id="top-rated-tv"
                     type="tv"
                 />
-
-                {/* TV DETAIL MODAL */}
-                {selectedTVId && (
-                    <div>
-                        {/* Replace this later with TVShowDetail component */}
-                        <p className="text-white">
-                            TV Detail Modal Here (ID: {selectedTVId})
-                        </p>
-                    </div>
-                )}
-
             </div>
         </>
     );

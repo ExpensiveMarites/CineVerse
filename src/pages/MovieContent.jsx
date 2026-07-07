@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import GenreSection from "../components/ContentComponents/GenreSection";
 import HeroSection from "../components/ContentComponents/HeroSection";
 import MovieSlider from "../components/ContentComponents/MovieSlider";
-import MoviesDetail from "../components/ContentComponents/MoviesDetail";
 import { useMovies } from "../context/MoviesContext";
 
 function MovieContent() {
-  const { trendingMovies, popularMovies, topRatedMovies, selectedMovieId, closeMovie, error } = useMovies();
+  const { trendingMovies, popularMovies, topRatedMovies, error } = useMovies();
 
   if (error) {
     return (
@@ -66,13 +65,6 @@ function MovieContent() {
           items={topRatedMovies}
           id="top-rated"
         />
-
-        {selectedMovieId && (
-          <MoviesDetail movieId={selectedMovieId} onClose={closeMovie} />
-        )}
-
-
-
       </div>
 
       {/* Conditional Rendering */}

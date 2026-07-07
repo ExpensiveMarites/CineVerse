@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     fetchTVShowDetails,
     fetchSeasonDetails,
@@ -8,13 +9,13 @@ import {
 import { useMovies } from "../../context/MoviesContext";
 
 function TVShowDetail() {
+    const navigate = useNavigate();
     const {
         selectedMedia,
         closeMedia,
         videos,
         videosLoading,
         addToFavorites,
-        openPlayer,
     } = useMovies();
 
     const tvId = selectedMedia?.id;
@@ -22,10 +23,11 @@ function TVShowDetail() {
     const [tv, setTv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedSeason, setSelectedSeason] = useState(null);
-    const [episodes, setEpisodes] = useState([]);
+    const [episodesBySeason, setEpisodesBySeason] = useState({});
 
     const playerRef = useRef(null);
     const ytPlayerRef = useRef(null);
+    const seasonRequestRef = useRef(0);
     const trailer = videos?.length > 0 ? videos[0] : null;
     const [isMuted, setIsMuted] = useState(true);
 
@@ -76,36 +78,64 @@ function TVShowDetail() {
 
 
     useEffect(() => {
+        if (!tvId) return;
+
+        let cancelled = false;
+
         async function loadTV() {
             try {
                 setLoading(true);
+                setTv(null);
+                setSelectedSeason(null);
+                setEpisodesBySeason({});
 
                 const data = await fetchTVShowDetails(tvId);
 
-                setTv(data);
+                if (!cancelled && data?.id === tvId) {
+                    setTv(data);
+                }
 
             } catch (err) {
                 console.error(err);
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         }
 
-        if (tvId) {
-            loadTV();
-        }
+        loadTV();
+
+        return () => {
+            cancelled = true;
+        };
     }, [tvId]);
 
-    const loadSeason = async (seasonNumber) => {
-        try {
-            setSelectedSeason(seasonNumber);
+    const openSeason = async (seasonNumber) => {
+        if (selectedSeason === seasonNumber) {
+            setSelectedSeason(null);
+            return;
+        }
 
+        setSelectedSeason(seasonNumber);
+
+        if (episodesBySeason[seasonNumber]) return;
+
+        const requestId = seasonRequestRef.current + 1;
+        seasonRequestRef.current = requestId;
+
+        try {
             const seasonData = await fetchSeasonDetails(
                 tvId,
                 seasonNumber
             );
 
-            setEpisodes(seasonData.episodes || []);
+            if (seasonRequestRef.current === requestId) {
+                setEpisodesBySeason((prev) => ({
+                    ...prev,
+                    [seasonNumber]: seasonData || [],
+                }));
+            }
         } catch (err) {
             console.error(err);
         }
@@ -150,6 +180,30 @@ function TVShowDetail() {
                 notation: "compact",
             }).format(r)
             : "N/A";
+
+    const handleWatchFirstEpisode = async () => {
+        const firstSeason = tv?.seasons?.find((season) => season.season_number > 0);
+        if (!firstSeason) return;
+
+        const seasonNumber = firstSeason.season_number;
+        let seasonEpisodes = episodesBySeason[seasonNumber];
+
+        if (!seasonEpisodes) {
+            seasonEpisodes = await fetchSeasonDetails(tv.id, seasonNumber);
+            setEpisodesBySeason((prev) => ({
+                ...prev,
+                [seasonNumber]: seasonEpisodes || [],
+            }));
+        }
+
+        const firstEpisode = seasonEpisodes?.find((episodeItem) => episodeItem.episode_number > 0);
+        if (!firstEpisode) return;
+
+        try {
+            closeMedia();
+        } catch (e) {}
+        navigate(`/watch/tv/${tv.id}?season=${seasonNumber}&episode=${firstEpisode.episode_number}`);
+    };
 
 
     return (
@@ -307,14 +361,7 @@ function TVShowDetail() {
                             <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-md">
 
                                 <button
-                                    onClick={() => {
-
-                                        openPlayer({
-                                            id: tv.id,
-                                            type: "tv",
-                                            title: tv.name,
-                                        });
-                                    }}
+                                    onClick={handleWatchFirstEpisode}
                                     className="flex-1 bg-brand-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg"
                                 >
                                     Watch Now
@@ -338,7 +385,7 @@ function TVShowDetail() {
 
                     {/* SEASONS */}
 
-                    <div className="mt-16">
+                    {/* <div className="mt-16">
                         <h2 className="text-2xl font-bold mb-6">
                             Seasons
                         </h2>
@@ -351,25 +398,9 @@ function TVShowDetail() {
                                         key={season.id}
                                         className="border border-white/10 rounded-2xl overflow-hidden bg-white/5"
                                     >
-                                        {/* SEASON HEADER */}
+                                        
                                         <button
-                                            onClick={async () => {
-
-                                                // CLOSE IF SAME SEASON
-                                                if (selectedSeason === season.season_number) {
-                                                    setSelectedSeason(null);
-                                                    setEpisodes([]);
-                                                    return;
-                                                }
-                                                setSelectedSeason(season.season_number);
-
-                                                const seasonData = await fetchSeasonDetails(
-                                                    tvId,
-                                                    season.season_number
-                                                );
-
-                                                setEpisodes(seasonData || []);
-                                            }}
+                                            onClick={() => openSeason(season.season_number)}
                                             className={`w-full flex items-center justify-between p-5 transition
                         
                         ${selectedSeason === season.season_number
@@ -398,19 +429,19 @@ function TVShowDetail() {
 
                                         </button>
 
-                                        {/* EPISODES */}
+                                        
                                         {selectedSeason === season.season_number && (
 
                                             <div className="p-5 grid md:grid-cols-2 gap-5">
 
-                                                {episodes.map((episode) => (
+                                                {(episodesBySeason[season.season_number] || []).map((episode) => (
 
                                                     <div
                                                         key={episode.id}
                                                         className="bg-black/40 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition"
                                                     >
 
-                                                        {/* IMAGE */}
+                                                       
                                                         <div className="h-44 overflow-hidden">
 
                                                             <img
@@ -428,7 +459,7 @@ function TVShowDetail() {
 
                                                         </div>
 
-                                                        {/* INFO */}
+                                                        
                                                         <div className="p-5">
 
                                                             <p className="text-red-400 text-sm mb-2">
@@ -445,13 +476,8 @@ function TVShowDetail() {
 
                                                             <button
                                                                 onClick={() => {
-                                                                    openPlayer({
-                                                                        id: tv.id,
-                                                                        type: "tv",
-                                                                        season: season.season_number,
-                                                                        episode: episode.episode_number,
-                                                                        title: tv.name,
-                                                                    });
+                                                                    try { closeMedia(); } catch (e) {}
+                                                                    navigate(`/watch/tv/${tv.id}?season=${season.season_number}&episode=${episode.episode_number}`);
                                                                 }}
                                                                 className="mt-5 w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold transition"
                                                             >
@@ -471,7 +497,7 @@ function TVShowDetail() {
 
                                 ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="mt-16 grid md:grid-cols-2 gap-10">
 

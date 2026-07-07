@@ -19,7 +19,7 @@ function GenreSection() {
   const [genreMovies, setGenreMovies] = useState([]);
   const [loadingGenreMovies, setLoadingGenreMovies] = useState(false);
 
-  // ✅ NEW: visible count (progressive loading)
+
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
@@ -29,6 +29,8 @@ function GenreSection() {
   }, [loading, genres]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const loadGenreMovies = async () => {
       if (!selectedGenre) return;
 
@@ -36,16 +38,22 @@ function GenreSection() {
 
       const movies = await fetchMoviesByGenre(selectedGenre.id);
 
-      // ✅ keep full list (no slice)
+      if (cancelled) return;
+
+      
       setGenreMovies(movies || []);
 
-      // reset visible count when genre changes
+      
       setVisibleCount(12);
 
       setLoadingGenreMovies(false);
     };
 
     loadGenreMovies();
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedGenre]);
 
   // wheel scroll
