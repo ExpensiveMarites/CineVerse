@@ -118,7 +118,7 @@ function GenreSection() {
     (Math.round(rating * 10) / 10).toFixed(1);
 
   return (
-    <section className="py-16 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden">
+    <section className="py-8 sm:py-12 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden">
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.12),transparent_65%)] animate-pulse pointer-events-none" />
       <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" />
@@ -127,24 +127,13 @@ function GenreSection() {
 
       <div className="container mx-auto px-4 relative z-10">
 
-        <h2 className="
-          text-2xl md:text-4xl font-bold
-          text-white mb-6
-          tracking-wide
-          drop-shadow-[0_0_20px_rgba(255,0,0,0.25)]
-        ">
-          Browse by Genre
-        </h2>
+        <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-4 sm:mb-6 tracking-wide drop-shadow-[0_0_14px_rgba(255,0,0,0.18)]">Browse by Genre</h2>
 
         {/* GENRE SCROLL */}
-        <div className="mb-10">
+        <div className="mb-6">
           <div
             ref={scrollRef}
-            className={`
-              flex space-x-3 overflow-x-auto pb-3 scrollbar-hide select-none
-              transition-all duration-300
-              ${isDragging ? "cursor-grabbing" : "cursor-grab"}
-            `}
+            className={`flex snap-x snap-mandatory space-x-2 sm:space-x-3 overflow-x-auto pb-3 scrollbar-hide select-none -mx-2 px-2 transition-all duration-200 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
@@ -154,18 +143,7 @@ function GenreSection() {
               <button
                 key={gen.id}
                 onClick={() => setSelectedGenre(gen)}
-                className={`
-                  px-4 py-2 rounded-md text-sm whitespace-nowrap
-                  transition-all duration-300
-                  border border-white/10
-                  backdrop-blur-md
-                  hover:scale-105
-                  hover:shadow-[0_0_20px_rgba(255,0,0,0.25)]
-                  ${selectedGenre?.id === gen.id
-                    ? "bg-red-600 text-white shadow-[0_0_25px_rgba(255,0,0,0.35)]"
-                    : "bg-neutral-900/60 hover:bg-neutral-800"
-                  }
-                `}
+                className={`snap-start px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-200 border border-white/10 ${selectedGenre?.id === gen.id ? "bg-red-600 text-white shadow-[0_0_18px_rgba(255,0,0,0.28)]" : "bg-neutral-900/60 hover:bg-neutral-800"}`}
               >
                 {gen.name}
               </button>
@@ -185,7 +163,7 @@ function GenreSection() {
         {/* MOVIES GRID */}
         {!loadingGenreMovies && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
 
               {genreMovies.slice(0, visibleCount).map((movie) => (
                 <div
@@ -194,15 +172,10 @@ function GenreSection() {
                   onClick={() => openMedia(movie.id, "movie")}
                 >
 
-                  <div className="
-                    relative rounded-xl overflow-hidden
-                    bg-neutral-900
-                    shadow-[0_10px_40px_rgba(0,0,0,0.6)]
-                    group-hover:shadow-[0_25px_80px_rgba(255,0,0,0.25)]
-                    transition-all duration-500
-                  ">
 
-                    <div className="aspect-[2/3]">
+                  <div className="relative rounded-xl overflow-hidden bg-neutral-900 shadow-[0_8px_30px_rgba(0,0,0,0.55)] group-hover:shadow-[0_20px_60px_rgba(255,0,0,0.2)] transition-all duration-400">
+
+                    <div className="aspect-[3/4] sm:aspect-[2/3]">
 
                       <img
                         src={
@@ -225,12 +198,7 @@ function GenreSection() {
                         transition-all duration-500
                         flex flex-col justify-end p-3
                       ">
-                        <button className="
-                          mt-2 w-full bg-red-600 hover:bg-red-700
-                          text-white py-2 rounded-md text-xs
-                          shadow-[0_0_20px_rgba(255,0,0,0.3)]
-                          transition-all duration-300
-                        ">
+                        <button className="mt-2 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md text-xs shadow-[0_0_12px_rgba(255,0,0,0.22)] transition-all duration-200">
                           View Details
                         </button>
                       </div>
@@ -286,7 +254,7 @@ function GenreSection() {
 
 
             {visibleCount < genreMovies.length && (
-              <div className="flex justify-center mt-10">
+              <div className="flex justify-center mt-6">
                 <button
                   onClick={() => navigate(`/genre/movie/${selectedGenre.id}`)}
                   className="
@@ -295,9 +263,8 @@ function GenreSection() {
                   text-white text-sm md:text-base font-semibold
                   tracking-wide
                   shadow-[0_0_30px_rgba(255,0,0,0.4)]
-                  hover:scale-105
-                  transition-all duration-300
-                  overflow-hidden"
+                  hover:scale-102
+                  transition-transform duration-200 overflow-hidden"
                 >
                   <span className="relative z-10">Show More</span>
 

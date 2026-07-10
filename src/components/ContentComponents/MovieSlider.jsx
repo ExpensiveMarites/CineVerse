@@ -92,7 +92,7 @@ function MovieSlider({
   return (
     <section
       id={id}
-      className="py-16 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden"
+      className="py-10 sm:py-16 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden"
     >
       {/* BACKGROUND EFFECTS */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,0,0.10),transparent_70%)] pointer-events-none animate-pulse" />
@@ -104,15 +104,15 @@ function MovieSlider({
       <div className="container mx-auto px-4 relative z-10">
 
         {/* HEADER */}
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-8 sm:mb-12">
 
           <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold uppercase tracking-[0.18em]">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold uppercase tracking-[0.12em] sm:tracking-[0.16em]">
               {title}
             </h2>
 
             {subtitle && (
-              <p className="text-neutral-400 text-sm md:text-base mt-2 italic opacity-80">
+              <p className="text-neutral-400 text-xs sm:text-sm md:text-base mt-2 italic opacity-80">
                 {subtitle}
               </p>
             )}
@@ -122,21 +122,12 @@ function MovieSlider({
           <div className="flex space-x-2">
             <button
               onClick={scrollLeft}
-              className="
-                p-2 rounded-full
-                bg-black/40
-                backdrop-blur-xl
-                border border-white/10
-                hover:bg-red-700
-                hover:shadow-[0_0_25px_rgba(255,0,0,0.35)]
-                text-white
-                transition-all duration-300
-              "
+              className="p-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 hover:bg-red-700 hover:shadow-[0_0_18px_rgba(255,0,0,0.28)] text-white transition-all duration-200"
               aria-label="Scroll Left"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-4 w-4"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -152,21 +143,12 @@ function MovieSlider({
 
             <button
               onClick={scrollRight}
-              className="
-                p-2 rounded-full
-                bg-black/40
-                backdrop-blur-xl
-                border border-white/10
-                hover:bg-red-700
-                hover:shadow-[0_0_25px_rgba(255,0,0,0.35)]
-                text-white
-                transition-all duration-300
-              "
+              className="p-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 hover:bg-red-700 hover:shadow-[0_0_18px_rgba(255,0,0,0.28)] text-white transition-all duration-200"
               aria-label="Scroll Right"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-4 w-4"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -186,7 +168,7 @@ function MovieSlider({
         <div
           ref={sliderRef}
           onScroll={handleScroll}
-          className="flex space-x-6 pb-6 overflow-x-auto scroll-smooth snap-x cursor-grab scrollbar-hide"
+          className="flex space-x-3 sm:space-x-6 pb-4 sm:pb-6 overflow-x-auto scroll-smooth snap-x cursor-grab scrollbar-hide"
           onMouseDown={startDrag}
           onMouseLeave={stopDrag}
           onMouseUp={stopDrag}
@@ -206,15 +188,15 @@ function MovieSlider({
                 <div
                   key={`${item?.id}-${index}`}
                   onClick={() => openMedia(item.id, type)}
-                  className={`min-w-[200px] md:min-w-[260px] snap-start relative group cursor-pointer transition-all duration-500 ${activeIndex === index
+                  className={`min-w-[140px] sm:min-w-[180px] md:min-w-[260px] snap-start relative group cursor-pointer transition-transform duration-300 ${activeIndex === index
                     ? "scale-100 z-20"
-                    : "scale-95 opacity-70"
+                    : "scale-95 opacity-80"
                     }`}
                 >
                   <div className="rounded-2xl overflow-hidden bg-neutral-900 shadow-lg group-hover:shadow-red-500/30 transition">
 
                     {/* IMAGE */}
-                    <div className="relative aspect-[2/3]">
+                    <div className="relative aspect-[3/4] sm:aspect-[2/3]">
                       <img
                         src={getImageUrl(item.poster_path, "w500")}
                         alt={title}

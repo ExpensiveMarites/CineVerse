@@ -121,7 +121,7 @@ function TVGenreSection() {
         (Math.round(rating * 10) / 10).toFixed(1);
 
     return (
-        <section className="py-16 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden">
+        <section className="py-8 sm:py-12 bg-gradient-to-b from-black via-neutral-950 to-black text-white relative overflow-hidden">
 
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.12),transparent_65%)] animate-pulse pointer-events-none" />
 
@@ -129,45 +129,27 @@ function TVGenreSection() {
 
             <div className="container mx-auto px-4 relative z-10">
 
-                <h2 className="text-2xl md:text-4xl font-bold mb-6 tracking-wide">
-                    Browse TV Shows by Genre
-                </h2>
+                <h2 className="text-xl sm:text-2xl md:text-4xl font-bold mb-4 sm:mb-6 tracking-wide">Browse TV Shows by Genre</h2>
 
                 {/* GENRES */}
-                <div className="mb-10">
-
+                <div className="mb-6">
                     <div
                         ref={scrollRef}
-                        className={`
-              flex space-x-3 overflow-x-auto pb-3 scrollbar-hide select-none
-              ${isDragging ? "cursor-grabbing" : "cursor-grab"}
-            `}
+                        className={`flex snap-x snap-mandatory space-x-2 sm:space-x-3 overflow-x-auto pb-3 scrollbar-hide select-none -mx-2 px-2 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
                         onMouseDown={handleMouseDown}
                         onMouseLeave={handleMouseLeave}
                         onMouseUp={handleMouseUp}
                         onMouseMove={handleMouseMove}
                     >
-
                         {tvGenres.slice(0, 21).map((genre) => (
-
                             <button
                                 key={genre.id}
                                 onClick={() => setSelectedGenre(genre)}
-                                className={`
-                  px-4 py-2 rounded-md text-sm whitespace-nowrap
-                  border border-white/10
-                  transition-all duration-300
-                  ${selectedGenre?.id === genre.id
-                                        ? "bg-red-600 text-white"
-                                        : "bg-neutral-900/60 hover:bg-neutral-800"
-                                    }
-                `}
+                                className={`snap-start px-3 py-1.5 rounded-full text-xs whitespace-nowrap border border-white/10 ${selectedGenre?.id === genre.id ? "bg-red-600 text-white" : "bg-neutral-900/60 hover:bg-neutral-800"}`}
                             >
                                 {genre.name}
                             </button>
-
                         ))}
-
                     </div>
                 </div>
 
@@ -181,7 +163,7 @@ function TVGenreSection() {
                 {/* TV GRID */}
                 {!loadingGenreShows && (
                     <>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
 
                             {genreShows
                                 .slice(0, visibleCount)
@@ -193,9 +175,9 @@ function TVGenreSection() {
                                         className="group cursor-pointer hover:-translate-y-1 transition-all duration-500"
                                     >
 
-                                        <div className="relative rounded-xl overflow-hidden bg-neutral-900">
+                                        <div className="relative rounded-xl overflow-hidden bg-neutral-900 shadow-[0_8px_30px_rgba(0,0,0,0.55)]">
 
-                                            <div className="aspect-[2/3]">
+                                            <div className="aspect-[3/4] sm:aspect-[2/3]">
 
                                                 <img
                                                     src={
@@ -207,12 +189,10 @@ function TVGenreSection() {
                                                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                                                 />
 
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-3">
-
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-2">
                                                     <button className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md text-xs">
                                                         View Details
                                                     </button>
-
                                                 </div>
 
                                             </div>

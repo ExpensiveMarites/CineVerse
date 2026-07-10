@@ -23,8 +23,14 @@ export const EMBED_SERVERS = [
     {
         id: "vidsrc",
         name: "VidSrc",
-        movie: "https://vidsrc.sbs/embed/movie",
-        tv: "https://vidsrc.sbs/embed/tv",
+        movie: "https://vsembed.ru/embed/movie",
+        tv: "https://vsembed.ru/embed/tv",
+    },
+    {
+        id: "vidcore",
+        name: "VidCore",
+        movie: "https://www.vidcore.org/embed/movie",
+        tv: "https://www.vidcore.org/embed/tv",
     },
 ];
 
