@@ -1,16 +1,125 @@
-# React + Vite
+# 🎬 CineVerse
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CineVerse is a responsive movie and TV show web application built with React. It allows users to discover trending, popular, and top rated movies and TV shows, view detailed information, browse by genre, save favorites, and watch available content through the application's media player.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[View CineVerse Live](https://cine-verse-cyan.vercel.app/)
 
-## React Compiler
+## 📸 Screenshots
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Home Page
 
-## Expanding the ESLint configuration
+![CineVerse Home Page](public/home.png)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Movie Details
+
+![Movie Details](public/movie-details.png)
+
+### TV Shows
+
+![TV Shows](public/tv-shows.png)
+
+### Watch Page
+
+![Watch Page](public/watch-page.png)
+
+> Replace the screenshot filenames above with the actual image filenames in your `public` folder.
+
+## ✨ Features
+
+### Movie Discovery
+
+* Browse trending movies
+* Browse popular movies
+* Browse top rated movies
+* View movie information
+* View movie ratings
+* View release dates
+* View movie overviews
+* Browse movies by genre
+
+### TV Shows
+
+* Browse TV shows
+* View TV show information
+* Browse TV shows by genre
+* View seasons and episodes
+* Access the watch page for available episodes
+
+### Search
+
+* Search for movies and TV shows
+* Display matching results
+* Navigate directly to movie or TV show details
+
+### Movie Details
+
+Users can view detailed information about selected movies and TV shows, including:
+
+* Title
+* Poster
+* Backdrop
+* Overview
+* Rating
+* Release information
+* Genres
+* Additional movie or TV show information
+
+### Favorites
+
+Users can save movies and TV shows to their favorites and access them through the Favorites page.
+
+### Watch Page
+
+CineVerse includes a dedicated watch page for movies and TV episodes.
+
+The application supports multiple video player sources to provide alternative playback options when a source is unavailable.
+
+### Responsive Design
+
+The interface is designed to work across:
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile devices
+
+## 🛠️ Technologies Used
+
+* React
+* JavaScript
+* Tailwind CSS
+* React Router
+* Vite
+* Framer Motion
+* Lucide React
+* TMDB API
+
+## 📦 Project Structure
+
+```text
+CineVerse/
+├── public/
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   └── SharedComponents/
+│   ├── context/
+│   ├── pages/
+│   ├── services/
+│   │   └── Api.js
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+│
+├── .gitignore
+├── biome.json
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── vite.config.js
+└── README.md
