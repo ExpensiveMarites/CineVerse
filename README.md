@@ -4,7 +4,7 @@ CineVerse is a responsive movie and TV show web application built with React. It
 
 ## 🌐 Live Demo
 
-[View CineVerse Live](https://cine-verse-cyan.vercel.app/)
+[View CineVerse Live](https://cine-verse-ebon.vercel.app/)
 
 ## 📸 Screenshots
 
