@@ -10,11 +10,11 @@ CineVerse is a responsive movie and TV show web application built with React. It
 
 ### Home Page
 
-![CineVerse Home Page](public/home.png)
+![CineVerse Home Page](Home(2).png)
 
 ### Movie Details
 
-![Movie Details](public/movie-details.png)
+![Movie Details](public/About.png)
 
 ### TV Shows
 
@@ -22,7 +22,7 @@ CineVerse is a responsive movie and TV show web application built with React. It
 
 ### Watch Page
 
-![Watch Page](public/watch-page.png)
+![Watch Page](public/Watch.png)
 
 > Replace the screenshot filenames above with the actual image filenames in your `public` folder.
 
